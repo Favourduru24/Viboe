@@ -7,9 +7,9 @@ const uploadShort = async (req, res, next) => {
     session.startTransaction()
       
    try {
-     const {video, description} = req.body
+     const {videoUrl, description, title, userId, category} = req.body
 
-      const newShortVideo = await Short.create([{video, description}])
+      const newShortVideo = await Short.create([{videoUrl, description, title, category, userId}], {session})
 
        await session.commitTransaction()
        session.endSession()
@@ -27,14 +27,14 @@ const uploadShort = async (req, res, next) => {
    }
 }
 
-const getAllShortVideo = async () => {
+const getAllShortVideo = async (req, res) => {
    try{
 
   const short = await Short.find()
 
   res.json({
     success: true,
-    short: short,
+    short,
     message: 'Short video fetched successfully!'
   })
  

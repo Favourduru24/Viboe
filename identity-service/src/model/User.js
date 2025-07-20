@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema({
     username: {
       type: String,
       required: [true, 'username is required!'],
+      trim: true
     },
     password: {
       type: String,
@@ -13,11 +14,15 @@ const userSchema = new mongoose.Schema({
     email: {
       type: String,
       required: [true, 'email is required!'],
+      trim: true
     },
     profilePics: {
       type: String,
-      // required: [true, 'profilePics is required!'],
-    }
+    },
+    subscription: [{
+       type: mongoose.Schema.Types.ObjectId,
+       ref: 'User'
+    }]
 }, {
     timestamp: true
 })

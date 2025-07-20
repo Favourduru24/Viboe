@@ -5,7 +5,7 @@ const cors = require('cors')
 const corsOption = require('./config/corsOption')
 const cookieParser = require('cookie-parser')
 const connectDB = require('./config/dbConnc')
-const {logger, logEvent} = require('./middleware/logger')
+const {logger} = require('./middleware/logger')
 const errorMiddleware = require('./middleware/errorHandler')
 const PORT = process.env.PORT || 3002
 const helmet = require('helmet')
@@ -46,6 +46,5 @@ app.use(helmet())
   app.use('/api/auth', require('./router/authRoutes'))
   app.use(errorMiddleware)
 
-
-connectDB()
-app.listen(PORT, () => {console.log(`"service": identity-service running on port ${PORT}`) })
+  connectDB()
+  app.listen(PORT, () => {console.log(`"service": identity-service running on port ${PORT}`) })

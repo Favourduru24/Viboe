@@ -9,7 +9,7 @@ const allowedOrigin = require('./allowedOrigin')
         }
       },
       optionSuccessStatus: 204,
-      credential: true
+      credentials: true
  }
 
  module.exports = corsOption

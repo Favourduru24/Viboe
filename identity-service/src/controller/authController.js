@@ -80,7 +80,7 @@ const login = async(req, res, next) => {
         {expiresIn: '7d'}
     ) 
 
-     res.cookies('jwt', refreshToken, {
+     res.cookie('jwt', refreshToken, {
        httpOnly: true,
        sameSite: 'None',
        secure: true,
@@ -126,7 +126,7 @@ const refresh = (req, res) => {
 
          if(!foundUser) {
            return res.status(401).json({
-            message: 'Unauthorized!'
+            message: 'Unauthorized yh!'
            })
          }
          const accessToken = jwt.sign({

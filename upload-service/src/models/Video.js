@@ -1,29 +1,43 @@
 const mongoose = require('mongoose')
 
 const videoSchema = new mongoose.Schema({
-   video: {
-     type:mongoose.Schema.Types.ObjectId,
-      ref: 'Video'
+   videoUrl: {
+       message: String,
+       cloudinaryUrl: String,
+       cloudinaryPublicId: String
    },
-   userId: {
-    type:mongoose.Schema.Types.ObjectId,
-     ref: 'User'
+   thumbnailUrl: {
+     message: String,
+     cloudinaryUrl: String,
+     cloudinaryPublicId: String
    },
    description: {
      type: String,
-      required: ['video description is required', true],
-      trim: true
+     required: [true, 'video description is required'],
+     trim: true
    },
-    title:{
-      required: ['video title is required', true],
+   title: {
+     type: String,
+     required: [true, 'video title is required'],
+     trim: true
+   },
+   category: {
+     type: String,
+     required: [true, 'video category is required'],
+     trim: true
+   },
+   userId: {
+     type: mongoose.Schema.Types.ObjectId,
+     ref: 'User',
+     required: [true, 'UnAuthorized to create video']
+   },
+   likes: [{
+     type: mongoose.Schema.Types.ObjectId,
+     ref: 'User',
+   }],
    
-    },
-    thumbnail: {
-      required: ['video thumbnail is required', true],
-    }
-
 }, {
     timestamps: true
-})
+});
 
- module.exports = mongoose.model('Video', videoSchema)
+module.exports = mongoose.model('Video', videoSchema)

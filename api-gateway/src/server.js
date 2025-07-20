@@ -4,15 +4,14 @@ const app = express()
 const cors = require('cors')
 const corsOption = require('./config/corsOption')
 const rateLimit = require('express-rate-limit')
-const cookieParser = require('cookie-parser')
 const {logger, logEvent} = require('./middleware/logger')
 const errorMiddleware = require('./middleware/errorHandler')
 const helmet = require('helmet')
 const proxy = require('express-http-proxy')
+const verifyJwt = require('./middleware/verifyJwt')
 const PORT = process.env.PORT || 3001
 
 //middleware
-app.use(errorMiddleware)
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use(cors(corsOption))
@@ -59,8 +58,39 @@ const routeLimiter = rateLimit({
     }
   }))
 
+   app.use('/v1/video', verifyJwt, proxy(process.env.UPLOAD_SERVICE_URL, {
+     ...proxyOptions,
+     proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+  proxyReqOpts.headers['authorization'] = srcReq.headers.authorization;
+  return proxyReqOpts;
+},
+     userResDecorator: (proxyRes, proxyResData, userReq) => {
+        console.log(`Response recieved from upload service: ${proxyRes.statusCode}`)
+        return proxyResData
+    }
+   }))
+
+   app.use('/v1/upload', proxy(process.env.Upload_File, {
+    ...proxyOptions,
+      proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+        // proxyReqOpts.headers['x-user-id'] = srcReq.user.userId // Updated to use user object
+        if(!srcReq.headers['content-type']?.startsWith('multipart/form-data')){
+           proxyReqOpts.headers["Content-Type"] = "application/json"  
+        }
+        return proxyReqOpts
+    },
+       userResDecorator: (proxyRes, proxyResData, userReq) => {
+        console.log(`Response recieved from file service: ${proxyRes.statusCode}`)
+        return proxyResData
+    },
+    parseReqBody: false
+   }))
+
+  app.use(errorMiddleware)
+
 
 app.listen(PORT, () => {
     console.log(`Api Gateway is running on port ${PORT}`) 
     console.log(`idenity service is running on port ${process.env.IDENTITY_SERVICE_URL}`) 
+    console.log(`upload service is running on port ${process.env.UPLOAD_SERVICE_URL}`) 
 })

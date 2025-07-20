@@ -1,18 +1,25 @@
 const mongoose = require('mongoose')
 
 const videoShortSchema = new mongoose.Schema({
-    video: {
-     type:mongoose.Schema.Types.ObjectId,
-      ref: 'Short'
+    videoUrl: {
+        message: String,
+        cloudinaryUrl: String,
+        cloudinaryPublicId: String,
    },
    userId: {
        type:mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: ['unAuthorized to create short videos']
       },
     description: {
      type: String,
       required: ['video short description is required', true],
       trim: true
+   },
+   category: {
+     type: String,
+     required: [true, 'video category is required'],
+     trim: true
    },
  }, {
     timestamps: true
