@@ -30,6 +30,10 @@ const recordSchema = new mongoose.Schema({
           required: [true, 'video category is required'],
           trim: true
        },
+       likes: [{
+         type: mongoose.Schema.Types.ObjectId,
+         ref: 'User'
+       }]
         
 }, {
     timestamps: true

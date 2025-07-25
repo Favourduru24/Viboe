@@ -1,7 +1,12 @@
 const express = require('express')
 const router = express.Router()
 const verifyJwt = require('../middleware/verifyJwt')
-const {getAllUser, addUserSubscriber, removeUserSubscriber, getUserById} = require('../controller/userController')
+const {
+    getAllUser,
+    addUserSubscriber,
+    removeUserSubscriber,
+    getUserById
+    } = require('../controller/userController')
 
 router.patch('/add-subcriber', verifyJwt, addUserSubscriber)
 router.patch('/remove-subcriber', verifyJwt, removeUserSubscriber)

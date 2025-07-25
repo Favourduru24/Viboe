@@ -205,16 +205,27 @@ const unLikeVideo = async (req, res) => {
     }
 
     const video = await Video.findById(id).session(session);
-    if (!video) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Video not found' 
-      });
-    }
+    
+    // if (!video) {
+    //   await session.abortTransaction();
+    //   session.endSession();
+    //   return res.status(404).json({ 
+    //     success: false, 
+    //     message: 'Video not found' 
+    //   });
+    // }
 
     const savedVideo = await Save.create([{ videoId: id, userId}], { session });
+
+    if(!savedVideo) {
+       await session.abortTransaction();
+       session.endSession();
+       return res.status(404).json({
+         success: false,
+         message: 'Unable to save vidoe with inconsistent data'
+       })
+    }
+
     await session.commitTransaction();
     session.endSession();
 

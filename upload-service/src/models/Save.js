@@ -3,11 +3,13 @@ const mongoose = require('mongoose')
 const saveSchema = new mongoose.Schema({
    videoId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Video'
+      ref: 'Video',
+      required: true
    },
    userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User' 
+      ref: 'User',
+      required: true
    }
 }, {
    timestamps: true

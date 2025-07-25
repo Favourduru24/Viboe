@@ -1,44 +1,19 @@
-require('dotenv').config()
-const express = require('express')
-const app = express()
-const cors = require('cors')
-const corsOption = require('./config/corsOption')
-const connectDB = require('./config/dbConnc')
-const {logger} = require('./middleware/logger')
-const errorMiddleware = require('./middleware/errorHandler')
-const PORT = process.env.PORT || 3004
-const helmet = require('helmet')
-const {RateLimiterRedis} = require('express-rate-limiter')
-const Redis = require('ioredis')
+ const express = require('express')
+ const app = express()
+ const Port = 3000
 
-//middleware
-app.use(express.json())
-app.use(express.static('public'))
-app.use(express.urlencoded({extended: false}))
-app.use(cors(corsOption))
-app.use(logger)
-app.use(helmet())
 
-//  const redisClient = new Redis(process.env.REDIS_URL)
+  //app.use('/', require('./router/uploadShortRoutes'))
+  app.get('/', (req, res, next) => {
+  setTimeout(() => {
+    try {
+      throw new Error('BROKEN')
+    } catch (err) {
+      next(err)
+    }
+  }, 6000)
+})
 
-//  const rateLimiter  = new RateLimiterRedis({
-//    storeClient: redisClient,
-//    keyPrefix: 'middleware',
-//    point: 10,
-//    duration: 1
-//  })
-
-  // app.use((req, res, next) => {
-  //   rateLimiter.consume(req.ip)
-  //   .then(() => next())
-  //   .catch((error) => {
-  //   // logEvent(`Too Many Requests: ${options.message.message}\t${req.method}\t${req.url}\t${req.headers.origin}\t`, 'rateLimiter.log')
-  //   })
-  // })
- 
-  app.use('/api/v1/video', require('./router/uploadVideoRoutes'))
-  app.use('/api/v1/short', require('./router/uploadShortRoutes'))
-  app.use(errorMiddleware)
- 
-// connectDB()
-   app.listen(PORT, () => {console.log(`"service": upload-service running on port ${PORT}`) })
+ app.listen(Port, () => {
+    console.log(`Server running on port ${Port}`)
+ })

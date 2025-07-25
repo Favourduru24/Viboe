@@ -98,13 +98,13 @@ const removeUserSubscriber = async (req, res) => {
 }
 
  const getUserById = async(req, res) => {
-    const user = req.id
+    const userId = req.body
 
     try {
-        const userId = await User.findById(user)
+        const user = await User.findById(userId)
 
-        if(!userId) {
-             return res.status(400).json({
+        if(!user) {
+             return res.status(404).json({
              success: false,
              message: 'No user found.'
              }
@@ -112,11 +112,16 @@ const removeUserSubscriber = async (req, res) => {
 
         res.status(200).json({
             success: true,
-            message: 'user fetch successfully'
+            message: 'user fetch successfully',
+            user,
         })
 
     } catch(error) {
-        console.log(error, 'Something went wrong fetching user details')
+        res.status(500).json({
+            success: false,
+            message: 'Something went wrong fetching user details.',
+            error
+        })
     }
  }
 
