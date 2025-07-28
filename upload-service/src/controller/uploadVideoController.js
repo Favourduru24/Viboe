@@ -37,9 +37,11 @@ const Save = require('../models/Save')
 const getAllVideo = async (req, res) => {
    try{
 
-  const video = await Video.find()
+      const {category = ''} = req.query
 
-  if(!video) {
+  const video = await Video.find(category)
+
+  if(!video?.length > 0) {
      return res.status(400).json({
       success: false,
       message: 'No video found'
@@ -206,14 +208,14 @@ const unLikeVideo = async (req, res) => {
 
     const video = await Video.findById(id).session(session);
     
-    // if (!video) {
-    //   await session.abortTransaction();
-    //   session.endSession();
-    //   return res.status(404).json({ 
-    //     success: false, 
-    //     message: 'Video not found' 
-    //   });
-    // }
+    if (!video) {
+      await session.abortTransaction();
+      session.endSession();
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Video not found' 
+      });
+    }
 
     const savedVideo = await Save.create([{ videoId: id, userId}], { session });
 
@@ -271,6 +273,44 @@ const unLikeVideo = async (req, res) => {
     }
  }
 
+ const getVideoByUser = async (req, res) => {
+    try {
+    const userId = req.id
+
+   if(!mongoose.Types.ObjectId.isValid(userId)) {
+       return res.status(400).json({
+          success: false,
+          message: 'Invalid id format.'
+       })
+   }
+
+   const userVideo = await Video.find()
+
+   if(!userVideo) {
+       return res.status(404).json({
+          success: false,
+          message: 'No user video found.'
+       })
+   }
+
+   res.status(204).json({
+      message: 'User video fetched successfully.',
+       userVideo
+   })
+    } catch(error) {
+     return res.status(500).json({
+        message: 'Something went wrong fetching user video',
+        error
+    })
+    }
+   
+
+}
+
+ const getVideoCategory = (req, res) => {
+   
+ }
+
 module.exports = {
    uploadVideo,
    getAllVideo,
@@ -279,4 +319,5 @@ module.exports = {
    getVideoById,
    saveVideo,
    getSavedVideo,
+   getVideoByUser
 }
