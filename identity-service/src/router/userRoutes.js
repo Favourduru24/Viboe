@@ -11,6 +11,6 @@ const {
 router.patch('/add-subcriber', verifyJwt, addUserSubscriber)
 router.patch('/remove-subcriber', verifyJwt, removeUserSubscriber)
 router.get('/get-user', getAllUser)
-router.get('/get-userId', getUserById)
+router.get('/get-userId', verifyJwt, getUserById)
 
 module.exports = router

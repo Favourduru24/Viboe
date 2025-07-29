@@ -39,14 +39,16 @@ const getAllVideo = async (req, res) => {
 
       const {category = ''} = req.query
 
-  const video = await Video.find(category)
+  const video = await Video.find()
 
-  if(!video?.length > 0) {
-     return res.status(400).json({
-      success: false,
-      message: 'No video found'
-     })
-  }
+//   if(!video?.length) {
+//      return res.status(404).json({
+//       success: false,
+//       message: 'No video found'
+//      })
+//   }
+
+  
 
   res.json({
     success: true,

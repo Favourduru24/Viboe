@@ -98,9 +98,15 @@ const removeUserSubscriber = async (req, res) => {
 }
 
  const getUserById = async(req, res) => {
-    const userId = req.body
+    const userId = req.id
 
     try {
+         if(!userId) {
+             return res.status(400).json({
+                success: false,
+                message: 'userId not found.'
+             })
+         }
         const user = await User.findById(userId)
 
         if(!user) {
@@ -117,10 +123,10 @@ const removeUserSubscriber = async (req, res) => {
         })
 
     } catch(error) {
+        console.log(error)
         res.status(500).json({
             success: false,
             message: 'Something went wrong fetching user details.',
-            error
         })
     }
  }

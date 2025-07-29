@@ -44,6 +44,7 @@ app.use(helmet())
 //   })
  
   app.use('/api/auth', require('./router/authRoutes'))
+  app.use('/api/user', require('./router/userRoutes') )
   app.use(errorMiddleware)
 
   connectDB()

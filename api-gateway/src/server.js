@@ -58,6 +58,18 @@ const routeLimiter = rateLimit({
     }
   }))
 
+  app.use('/v1/user', proxy(process.env.IDENTITY_SERVICE_URL, {
+    ...proxyOptions,
+    proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
+        proxyReqOpts.headers["Content-Type"] = "application/json"
+        return proxyReqOpts
+    },
+    userResDecorator: (proxyRes, proxyResData, userReq) => {
+        console.log(`Response recieved from identity service: ${proxyRes.statusCode}`)
+        return proxyResData
+    }
+  }))
+
    app.use('/v1/video', verifyJwt, proxy(process.env.UPLOAD_SERVICE_URL, {
      ...proxyOptions,
      proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
