@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const Record = require('../models/Record')
 const Save = require('../models/Save')
+const {createSave} = require('./saveVideoController')
+
 
 const createRecordedVideo = async (req, res, next) =>  {
      const session = await mongoose.startSession()
@@ -190,58 +192,8 @@ const unLikeRecordedVideo = async (req, res) => {
 }
 
  const saveRecordedVideo = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  
-  try {
-    const { id } = req.params
-    const userId = req.id
-
-    if(!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(userId)) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid ID format'
-      });
-    }
-
-    const video = await Record.findById(id).session(session);
-
-    if (!video) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Video not found' 
-      });
-    }
-
-    const savedVideo = await Save.create([{videoId: id, userId}], { session });
-
-    if(!savedVideo) {
-       await session.abortTransaction();
-       session.endSession();
-       return res.status(404).json({
-         success: false,
-         message: 'Unable to save vidoe with inconsistent data'
-       })
-    }
-
-    await session.commitTransaction();
-    session.endSession();
-
-    res.status(200).json({
-      success: true,
-      message: 'Video saved successfully'
-    });
-
-  } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
-    next(error)
-  }
-};
+   return createSave(req, res, next, Record);
+ }
 
  const getSavedRecordedVideo = async (req, res) => {
 

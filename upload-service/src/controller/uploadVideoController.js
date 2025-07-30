@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const Video = require('../models/Video')
 const Save = require('../models/Save')
+const {createSave} = require('./saveVideoController')
 
  const uploadVideo = async (req, res, next) => {
     const session = await mongoose.startSession()
@@ -35,33 +36,32 @@ const Save = require('../models/Save')
 }
 
 const getAllVideo = async (req, res) => {
-   try{
+  try {
+    const { category = "" } = req.query;
+    console.log("Received category:", category)
 
-      const {category = ''} = req.query
+    const video = await Video.find({
+      category: { $regex: new RegExp(category, "i") },
+    });
 
-  const video = await Video.find()
+    if (!video?.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No videos found for this category",
+      });
+    }
 
-//   if(!video?.length) {
-//      return res.status(404).json({
-//       success: false,
-//       message: 'No video found'
-//      })
-//   }
-
-  
-
-  res.json({
-    success: true,
-    videos: video,
-    message: 'Video fetched successfully!'
-  })
- 
-   } catch(error) {
-    console.log(error, 'Error fetching videos')
-    return res.status(500).json({
-       message: 'Something went wrong fetching video'
-    })
-   }
+    res.json({
+      success: true,
+      videos: video,
+      message: "Videos fetched successfully!",
+    });
+  } catch (error) {
+    console.error("Error fetching videos:", error);
+    res.status(500).json({
+      message: "Server error while fetching videos",
+    });
+  }
 }
 
 const getVideoById = async (req, res) => {
@@ -191,58 +191,8 @@ const unLikeVideo = async (req, res) => {
     }
 }
 
- const saveVideo = async (req, res, next) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  
-  try {
-    const { id } = req.params
-    const userId = req.id
-
-    if(!mongoose.Types.ObjectId.isValid(id) || !mongoose.Types.ObjectId.isValid(userId)) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid ID format'
-      });
-    }
-
-    const video = await Video.findById(id).session(session);
-    
-    if (!video) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(404).json({ 
-        success: false, 
-        message: 'Video not found' 
-      });
-    }
-
-    const savedVideo = await Save.create([{ videoId: id, userId}], { session });
-
-    if(!savedVideo) {
-       await session.abortTransaction();
-       session.endSession();
-       return res.status(404).json({
-         success: false,
-         message: 'Unable to save vidoe with inconsistent data'
-       })
-    }
-
-    await session.commitTransaction();
-    session.endSession();
-
-    res.status(200).json({
-      success: true,
-      message: 'Video saved successfully'
-    });
-
-  } catch (error) {
-    await session.abortTransaction();
-    session.endSession();
-    next(error)
-  }
+ const saveVideo = (req, res, next) => {
+    return createSave(req, res, next, Video);  
 };
 
  const getSavedVideo = async (req, res) => {
