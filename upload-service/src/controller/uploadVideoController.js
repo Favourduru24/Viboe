@@ -25,7 +25,7 @@ const {createSave} = require('./saveVideoController')
         res.status(201).json({
             success: true,
             message: 'Video created successfully',
-            video: newVideo[0] // Changed from 'videos' to 'video' for consistency
+            video: newVideo[0] 
         })
 
     } catch (error) {
@@ -44,7 +44,7 @@ const getAllVideo = async (req, res) => {
       category: { $regex: new RegExp(category, "i") },
     });
 
-    if (!video?.length) {
+    if (!video?.length > 0) {
       return res.status(404).json({
         success: false,
         message: "No videos found for this category",
