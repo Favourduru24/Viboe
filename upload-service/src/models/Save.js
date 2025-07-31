@@ -1,11 +1,11 @@
 const mongoose = require('mongoose')
 
 const saveSchema = new mongoose.Schema({
-   videoId: {
+   videoId: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Video',
       required: true
-   },
+   }],
    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
