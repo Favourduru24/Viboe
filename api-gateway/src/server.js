@@ -70,7 +70,7 @@ const routeLimiter = rateLimit({
     }
   }))
 
-   app.use('/v1/video', verifyJwt, proxy(process.env.UPLOAD_SERVICE_URL, {
+   app.use('/v1/video', proxy(process.env.UPLOAD_SERVICE_URL, {
      ...proxyOptions,
      proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
   proxyReqOpts.headers['authorization'] = srcReq.headers.authorization;
@@ -82,7 +82,7 @@ const routeLimiter = rateLimit({
     }
    }))
 
-   app.use('/v1/upload', proxy(process.env.Upload_File, {
+   app.use('/v1/upload',  proxy(process.env.Upload_File, {
     ...proxyOptions,
       proxyReqOptDecorator: (proxyReqOpts, srcReq) => {
         // proxyReqOpts.headers['x-user-id'] = srcReq.user.userId // Updated to use user object

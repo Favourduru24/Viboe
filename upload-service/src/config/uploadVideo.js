@@ -22,7 +22,7 @@ const storage = multer.diskStorage({
     limits: {fileSize: 100 * 1024 * 1024},
  }).single('video')
 
- const uploadVideoToCloudinary = async (req, res) => {
+const uploadVideoToCloudinary = async (req, res) => {
   if (!req.file) {
     return res.status(400).json({
       message: 'No video was uploaded!'
@@ -30,35 +30,50 @@ const storage = multer.diskStorage({
   }
 
   try {
-    // Option 1: Upload using file path
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      resource_type: "video", // Critical for video uploads
-      transformation: [{ width: 800, crop: 'limit' }],
-      folder: 'vibeo-user-video'
-    });
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          resource_type: "video",
+          transformation: [{ width: 800, crop: 'limit' }],
+          folder: 'vibeo-user-video',
+          timeout: 120000,
+        },
+        async (error, result) => {
+          try {
+            await fsPromise.unlink(req.file.path);
+            
+            if (error) {
+              console.error('Upload error:', error);
+              return res.status(500).json({
+                message: 'Error uploading video',
+                error: error.message
+              });
+            }
 
-    // Option 2: Or upload using file buffer
-    // const fileBuffer = fs.readFileSync(req.file.path);
-    // const result = await cloudinary.uploader.upload_stream({
-    //   resource_type: "video",
-    //   transformation: [{ width: 800, crop: 'limit' }],
-    //   folder: 'vibeo-user-video'
-    // }).end(fileBuffer);
+            return res.status(200).json({
+              message: 'Video uploaded successfully',
+              cloudinaryUrl: result.secure_url,
+              cloudinaryPublicId: result.public_id
+            });
+          } catch (cleanupError) {
+            console.error('Cleanup error:', cleanupError);
+            return res.status(500).json({
+              message: 'Error during cleanup',
+              error: cleanupError.message
+            });
+          }
+        }
+      );
 
-    // Clean up: Delete the temporary file
-    await fsPromise.unlink(req.file.path);
-
-    // Here you would typically save to your database
-    // Example: await VideoModel.create({ 
-    //   url: result.secure_url,
-    //   publicId: result.public_id,
-    //   // other fields
-    // });
-
-    return res.status(200).json({
-      message: 'Video uploaded successfully',
-      cloudinaryUrl: result.secure_url,
-      cloudinaryPublicId: result.public_id
+      // Create read stream with error handling
+      const readStream = fs.createReadStream(req.file.path);
+      
+      readStream.on('error', (error) => {
+        console.error('Read stream error:', error);
+        reject(error);
+      });
+      
+      readStream.pipe(uploadStream);
     });
 
   } catch (error) {

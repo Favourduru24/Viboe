@@ -10,7 +10,7 @@ const errorMiddleware = require('./middleware/errorHandler')
 const PORT = process.env.PORT || 3002
 const helmet = require('helmet')
 // const {RateLimiterRedis} = require('express-rate-limiter')
-// const Redis = require('ioredis')
+const Redis = require('ioredis')
 
 //middleware
 app.use(express.json())
@@ -23,7 +23,7 @@ app.use(helmet())
 
 //  const redisClient = new Redis(process.env.REDIS_URL)
 
- //Ddos rate limiting and connection
+//  Ddos rate limiting and connection
 //  const rateLimiter  = new RateLimiterRedis({
 //    storeClient: redisClient,
 //    keyPrefix: 'middleware',
@@ -31,21 +31,21 @@ app.use(helmet())
 //    duration: 1
 //  })
 
-//   app.use((req, res, next) => {
-//     rateLimiter.consume(req.ip)
-//     .then(() => next())
-//     .catch((error) => {
-//     logEvent(`Too Many Requests:${req.ip}`, 'rateLimiter.log')
-//     res.status(429).json({
-//       success: false,
-//       message: 'Too many requests'
-//     })
-//     })
-//   })
+  // app.use((req, res, next) => {
+  //   rateLimiter.consume(req.ip)
+  //   .then(() => next())
+  //   .catch((error) => {
+  //   logEvent(`Too Many Requests from this IP: ${req.ip}`, 'rateLimiter.log')
+  //   res.status(429).json({
+  //     success: false,
+  //     message: 'Too many requests'
+  //   })
+  //   })
+  // })
  
   app.use('/api/auth', require('./router/authRoutes'))
   app.use('/api/user', require('./router/userRoutes') )
   app.use(errorMiddleware)
 
   connectDB()
-  app.listen(PORT, () => {console.log(`"service": identity-service running on port ${PORT}`) })
+  app.listen(PORT, () => {console.log(`service: identity-service running on port ${PORT}`)})
