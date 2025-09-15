@@ -41,7 +41,7 @@ app.use(helmet())
   app.use('/api/video', require('./router/uploadVideoRoutes'))
   app.use('/api/video', require('./router/uploadShortRoutes'))
   app.use('/api/video', require('./router/uploadRecordRoutes'))
-  app.use('/api/upload/upload-video', upload, uploadVideoToCloudinary)
+  app.use('/api/upload/upload-video', uploadVideoToCloudinary)
   app.use('/api/upload/upload-image', uploadImage, uploadImageToCloudinary)
   app.use(errorMiddleware)
  
