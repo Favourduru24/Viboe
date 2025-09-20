@@ -3,7 +3,7 @@ const cloudinary = require('./cloudinary');
 
 // Use disk storage for large files
 const storage = multer.diskStorage({
-  destination: './temp',
+  destination: './public',
   filename: (req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
 });
 
