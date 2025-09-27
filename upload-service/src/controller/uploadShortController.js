@@ -27,54 +27,6 @@ const uploadShort = async (req, res, next) => {
    }
 }
 
-const likeShortVideo = async (req, res) => {
-
-   const {id} = req.params
-   const userId = req.id
-
-   if(!id) {
-     return res.status(400).json({
-        success: false,
-        message: 'No videoId recieved'
-     })
-   }
-   if(!userId) {
-     return res.status(400).json({
-        success: false,
-        message: 'No userId recieved'
-     })
-   }
-
-    try {
-
-        if(!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({
-                success: false,
-                messge: 'invalid Id fromat!'
-            })
-        }
-        const shorts = await Short.findById(id) 
-
-         if(!shorts?.likes.includes(userId)) {
-             shorts?.likes.push(userId)
-         }
-
-         await shorts.save()
-
-         res.status(200).json({
-            success: true,
-            message: 'shorts liked successfully!'
-         })
-
-    } catch (error) {
-      console.log(error, 'Error: Something went wrong liking video')  
-      return res.status(500).json({
-        message: 'Something went wrong liking video'
-      })
-    }
-    
-   
-}
 
 const unLikeShortVideo = async (req, res) => {
    const {id} = req.params
@@ -141,6 +93,58 @@ const getAllShortVideo = async (req, res) => {
     })
    }
 }
+
+const likeShort = async (req, res) => {
+   const {id} = req.params
+   const userId = req.id
+
+   if(!id) {
+     return res.status(400).json({
+        success: false,
+        message: 'No videoId recieved'
+     })
+   }
+   if(!userId) {
+     return res.status(400).json({
+        success: false,
+        message: 'No userId recieved'
+     })
+   }
+
+    try {
+        if(!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({
+                success: false,
+                messge: 'invalid Id fromat!'
+            })
+        }
+        const 
+        shorts = await Short.findById(id) 
+
+         if(!
+          shorts?.likes.includes(userId)) {
+             
+          shorts?.likes.push(userId)
+         }
+
+         await 
+         shorts.save()
+
+         res.status(200).json({
+            success: true,
+            message: 'shorts liked successfully!'
+         })
+
+    } catch (error) {
+      console.log(error, 'Error: Something went wrong liking shorts')  
+      return res.status(500).json({
+        message: 'Something went wrong liking shorts'
+      })
+    }
+    
+   
+}
+
 
 module.exports = {
     uploadShort,
